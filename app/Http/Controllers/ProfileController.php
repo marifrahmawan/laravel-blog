@@ -63,13 +63,17 @@ class ProfileController extends Controller
     public function update_photo(Request $request, $username){
         $user = User::where('username', $username)->firstOrFail();
 
+        if(\Storage::exists("public/".$user->photo)){
+            \Storage::delete("public/".$user->photo);
+        }
+
         $data = $request->validate([
             'photo' => ['required','mimes:jpg,jpeg,png', 'max:2000'],
         ]);
 
         $photo = $request->file('photo');
 
-        $data['photo'] = $photo->storeAs("images/profile-picture", "{$user->username}.{$photo->extension()}", "public");
+        $data['photo'] = $photo->storeAs("images/profile-picture", "{$user->id}.{$photo->extension()}", "public");
 
         $user->update($data);
 

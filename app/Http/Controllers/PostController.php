@@ -8,6 +8,8 @@ use App\Post;
 use App\Tag;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\Null_;
 
 class PostController extends Controller
 {
@@ -120,6 +122,10 @@ class PostController extends Controller
         $item = Post::where('slug', $slug)->firstOrFail();
 
         $this->authorize('update_and_delete', $item);
+        
+        if(Storage::exists("public/".$item->thumbnail)){
+            return $x = Storage::delete("public/".$item->thumbnail);
+        }
 
         $item->categories()->detach();
         $item->tags()->detach();
