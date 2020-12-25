@@ -9,7 +9,6 @@ use App\Tag;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use phpDocumentor\Reflection\Types\Null_;
 
 class PostController extends Controller
 {
@@ -49,8 +48,8 @@ class PostController extends Controller
             $data['thumbnail'] = $thumbnail->storeAs("images/posts", "{$slug}.{$thumbnail->extension()}", "public");
         }
 
-        $user = auth()->user();
-        $post = $user->posts()->create($data);
+        // $user = auth()->user();
+        $post = auth()->user()->posts()->create($data);
         
         $post->categories()->attach($request->category_id);
         $post->tags()->attach($request->tag_id);
@@ -124,7 +123,8 @@ class PostController extends Controller
         $this->authorize('update_and_delete', $item);
         
         if(Storage::exists("public/".$item->thumbnail)){
-            return $x = Storage::delete("public/".$item->thumbnail);
+            Storage::delete("public/".$item->thumbnail);
+            return redirect()->route('posts-index');
         }
 
         $item->categories()->detach();
